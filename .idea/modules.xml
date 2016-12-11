@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/happytour_server.iml" filepath="$PROJECT_DIR$/happytour_server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../AndroidStudioProjects/HappyTour/message/src/main/message.iml" filepath="$PROJECT_DIR$/../AndroidStudioProjects/HappyTour/message/src/main/message.iml" />
+    </modules>
+  </component>
+</project>

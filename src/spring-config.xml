@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--sessionFactory-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="annotatedClasses">
+            <list>
+                <value>com.gmugu.happytour.entity.UserinfoEntity</value>
+                <value>com.gmugu.happytour.entity.ScenicInfoEntity</value>
+                <value>com.gmugu.happytour.entity.ScenicCommentsEntity</value>
+                <value>com.gmugu.happytour.entity.TourMemberEntity</value>
+                <value>com.gmugu.happytour.entity.TravelTeamEntity</value>
+                <value>com.gmugu.happytour.entity.UserTrackEntity</value>
+                <value>com.gmugu.happytour.entity.NoticesEntity</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/happytour_db?useUnicode=true&amp;characterEncoding=UTF-8</prop>
+                <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <!--<prop key="hibernate.current_session_context_class">thread</prop>-->
+                <prop key="hibernate.connection.username">root</prop>
+                <prop key="hibernate.connection.password">admin</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- Dao-->
+    <bean id="dao" class="com.gmugu.happytour.dao.impl.DaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- Server-->
+    <bean id="server" class="com.gmugu.happytour.server.impl.ServerImpl">
+        <property name="dao" ref="dao"/>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref local="sessionFactory"/>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>server</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="transactionInterceptor"
+          class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <!-- 这里的方法签名可以精确到方法, 先懒惰一下全配置上 -->
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--邮件发送bean-->
+    <bean id="simpleMailSender" class="com.gmugu.happytour.comment.assist.email.SimpleMailSender">
+        <constructor-arg value="94156510@qq.com"/>
+        <constructor-arg value="zbqgpwnfvstscabc"/>
+    </bean>
+
+    <!-- Action-->
+
+
+    <bean id="testAction" class="com.gmugu.happytour.web.action.TestAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="loginInterceptor" class="com.gmugu.happytour.web.interceptor.LoginInterceptor" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="loginAction" class="com.gmugu.happytour.web.action.LoginAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+    <bean id="registerAction" class="com.gmugu.happytour.web.action.RegisterAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getRegisterCaptchaAction" class="com.gmugu.happytour.web.action.GetRegisterCaptchaAction"
+          scope="prototype">
+        <property name="server" ref="server"/>
+        <property name="simpleMailSender" ref="simpleMailSender"/>
+    </bean>
+
+    <bean id="retrievePasswordAction" class="com.gmugu.happytour.web.action.RetrievePasswordAction" scope="prototype">
+        <property name="server" ref="server"/>
+        <property name="simpleMailSender" ref="simpleMailSender"/>
+    </bean>
+
+    <bean id="checkUpdateAction" class="com.gmugu.happytour.web.action.CheckUpdateAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="logoutAction" class="com.gmugu.happytour.web.action.LogoutAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="updatePasswdAction" class="com.gmugu.happytour.web.action.UpdatePasswdAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="addOrUpdateUserInfoAction" class="com.gmugu.happytour.web.action.AddOrUpdateUserInfoAction"
+          scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="uploadTrackAction" class="com.gmugu.happytour.web.action.UpdatePasswdAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="downloadTrackAction" class="com.gmugu.happytour.web.action.DownloadTrackAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getScenicListAction" class="com.gmugu.happytour.web.action.GetScenicListAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="createTeamAction" class="com.gmugu.happytour.web.action.CreateTeamAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getTeamListAction" class="com.gmugu.happytour.web.action.GetTeamListAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="deleteTeamAction" class="com.gmugu.happytour.web.action.DeleteTeamAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="joinTeamAction" class="com.gmugu.happytour.web.action.JoinTeamAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="outTeamAction" class="com.gmugu.happytour.web.action.OutTeamAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="uploadLocationAction" class="com.gmugu.happytour.web.action.UploadLocationAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="guideCmdAction" class="com.gmugu.happytour.web.action.GuideCmdAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getAllTeamLocationAction" class="com.gmugu.happytour.web.action.GetAllTeamLocationAction"
+          scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getScenicInfoOfInAction" class="com.gmugu.happytour.web.action.GetScenicInfoOfInAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getTeammateTrackAction" class="com.gmugu.happytour.web.action.GetTeammateTrackAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getScenicInfoAction" class="com.gmugu.happytour.web.action.GetScenicInfoAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="commitScenicCommentAction" class="com.gmugu.happytour.web.action.CommitScenicCommentAction"
+          scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="getNoticesAction" class="com.gmugu.happytour.web.action.GetNoticesAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="publicNoticeAction" class="com.gmugu.happytour.web.action.PublicNoticeAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <!-- web action-->
+
+    <bean id="userCURDOnWebAction" class="com.gmugu.happytour.web.action.UserCURDOnWebAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+    <bean id="scenicCURDOnWebAction" class="com.gmugu.happytour.web.action.ScenicCURDOnWebAction" scope="prototype">
+        <property name="server" ref="server"/>
+    </bean>
+
+</beans>

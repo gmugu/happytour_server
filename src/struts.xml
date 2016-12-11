@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.action.extension" value="do,action"/>
+    <package name="happytour" extends="struts-default" namespace="/">
+
+        <interceptors>
+            <interceptor name="login" class="loginInterceptor"/>
+            <interceptor name="permission" class="com.gmugu.happytour.web.interceptor.PermissionInterceptor"/>
+
+            <interceptor-stack name="loginStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="login"/>
+            </interceptor-stack>
+
+            <interceptor-stack name="guideCmdStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="login"/>
+                <interceptor-ref name="permission">
+                    <param name="role">GUIDE</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="adminCmdStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="login"/>
+                <interceptor-ref name="permission">
+                    <param name="role">ADMIN</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <action name="test" class="testAction"></action>
+
+        <action name="login" class="loginAction"></action>
+        <action name="register" class="registerAction"></action>
+        <action name="getRegisterCaptcha" class="getRegisterCaptchaAction"></action>
+        <action name="retrievePassword" class="retrievePasswordAction"></action>
+        <action name="checkUpdate" class="checkUpdateAction"></action>
+        <action name="logout" class="logoutAction">
+            <interceptor-ref name="login"/>
+        </action>
+        <action name="updatePasswd" class="updatePasswdAction">
+            <result name="fail">updatePasswdFail.jsp</result>
+            <result name="success">updatePasswdSuccess.jsp</result>
+        </action>
+        <action name="addOrUpdateUserInfo" class="addOrUpdateUserInfoAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="uploadTrack" class="uploadTrackAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="downloadTrack" class="downloadTrackAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="getScenicList" class="getScenicListAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="createTeam" class="createTeamAction">
+            <interceptor-ref name="guideCmdStack"/>
+        </action>
+        <action name="deleteTeam" class="deleteTeamAction">
+            <interceptor-ref name="guideCmdStack"/>
+        </action>
+        <action name="getTeamList" class="getTeamListAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="joinTeam" class="joinTeamAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="outTeam" class="outTeamAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="uploadLocation" class="uploadLocationAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="guideCmd" class="guideCmdAction">
+            <interceptor-ref name="guideCmdStack"/>
+        </action>
+        <action name="getAllTeamLocation" class="getAllTeamLocationAction">
+            <interceptor-ref name="guideCmdStack"/>
+        </action>
+        <action name="getScenicInfoOfIn" class="getScenicInfoOfInAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="getTeammateTrack" class="getTeammateTrackAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="getScenicInfo" class="getScenicInfoAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="commitScenicComment" class="commitScenicCommentAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="getNotices" class="getNoticesAction">
+            <interceptor-ref name="loginStack"/>
+        </action>
+        <action name="publicNotice" class="publicNoticeAction">
+            <interceptor-ref name="guideCmdStack"/>
+        </action>
+
+        <!--WEB ACTION-->
+        <action name="loginOnWeb" class="loginAction" method="loginOnWeb">
+            <result name="success">main.jsp</result>
+            <result name="login">index.jsp</result>
+        </action>
+
+        <action name="getUserInfoListOnWeb" class="userCURDOnWebAction" method="findAll">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="findUserOnWeb" class="userCURDOnWebAction" method="find">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="deleteUserOnWeb" class="userCURDOnWebAction" method="delete">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="updateUserTypeOnWeb" class="userCURDOnWebAction" method="updateUserType">
+            <result name="success" type="dispatcher">userInfo.jsp</result>
+            <result name="error">userInfo_edit.jsp</result>
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="getScenicInfoOnWeb" class="scenicCURDOnWebAction" method="findAll">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="findScenicOnWeb" class="scenicCURDOnWebAction" method="find">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="saveOrUpdateScenicOnWeb" class="scenicCURDOnWebAction" method="saveOrUpdate">
+            <result name="success">scenicInfo.jsp</result>
+            <result name="error">scenicInfo.jsp</result>
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+        <action name="deleteScenicOnWeb" class="scenicCURDOnWebAction" method="delete">
+            <interceptor-ref name="adminCmdStack"/>
+        </action>
+
+    </package>
+</struts>
